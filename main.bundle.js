@@ -42987,6 +42987,7 @@ var AppComponent = (function () {
         this.configureDimensions();
     };
     AppComponent.prototype.configureDimensions = function () {
+        console.log(window);
         this.width = window.outerWidth;
         this.height = window.outerHeight;
         this.marqueeWidth = Math.max(this.width, this.height);
