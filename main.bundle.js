@@ -43005,6 +43005,8 @@ var AppComponent = (function () {
         if (e === void 0) { e = null; }
         var angle = screen['orientation']['angle'];
         this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
+        console.log(angle);
+        console.log(this.orientation);
         this.displayUserInput = this.orientation === Orientation.Protrait;
         this.displayMarquee = this.orientation === Orientation.Landscape;
     };
