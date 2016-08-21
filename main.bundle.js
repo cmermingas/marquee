@@ -42981,8 +42981,7 @@ var AppComponent = (function () {
     }
     ;
     AppComponent.prototype.ngOnInit = function () {
-        console.log('- Screen: ', screen);
-        console.log('- Window: ', window, window.orientation, window.onorientationchange);
+        this.useOrientation = window.orientation !== null;
         this.marqueeList = this.marqueeService.getList();
         this.marquee = this.marqueeService.getDefaultMarquee();
         this.inputText = this.marquee.text;
@@ -43003,19 +43002,27 @@ var AppComponent = (function () {
         //   this.marqueeHeight = this.marqueeWidth * this.width / this.height;
         // }
     };
+    // setDisplayItems() {
+    //
+    // }
     AppComponent.prototype.onResize = function (e) {
-        console.log('resize: ', e);
+        if (!this.useOrientation) {
+            console.log('resize: ', e);
+        }
     };
     AppComponent.prototype.onOrientationChange = function (e) {
         if (e === void 0) { e = null; }
-        console.log('orientation change: ', e);
-        // console.log(e && e.target);
-        var angle = e && e.target && e.target.orientation || 0;
-        this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
-        // console.log(angle);
-        // console.log(this.orientation);
-        this.displayUserInput = this.orientation === Orientation.Protrait;
-        this.displayMarquee = this.orientation === Orientation.Landscape;
+        if (this.useOrientation) {
+            console.log('orientation change: ', e);
+            console.log('screen: ', screen.width, screen.height);
+            // console.log(e && e.target);
+            var angle = e && e.target && e.target.orientation || 0;
+            this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
+            // console.log(angle);
+            // console.log(this.orientation);
+            this.displayUserInput = this.orientation === Orientation.Protrait;
+            this.displayMarquee = this.orientation === Orientation.Landscape;
+        }
     };
     AppComponent.prototype.changeText = function (e) {
         this.marquee = new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */](this.inputText, this.marquee.backgroundColor, this.marquee.textColor, this.marquee.font, this.marquee.animationSpeed);
