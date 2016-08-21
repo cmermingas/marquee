@@ -43003,11 +43003,11 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.onOrientationChange = function (e) {
         if (e === void 0) { e = null; }
-        console.log(e && e.target);
-        var angle = e && e.target && e.target.orientation.angle || 0;
+        // console.log(e && e.target);
+        var angle = e && e.target && e.target.orientation || 0;
         this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
-        console.log(angle);
-        console.log(this.orientation);
+        // console.log(angle);
+        // console.log(this.orientation);
         this.displayUserInput = this.orientation === Orientation.Protrait;
         this.displayMarquee = this.orientation === Orientation.Landscape;
     };
