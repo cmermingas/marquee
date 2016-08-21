@@ -43003,8 +43003,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.onOrientationChange = function (e) {
         if (e === void 0) { e = null; }
-        console.log(screen);
-        var angle = screen.orientation.angle;
+        var angle = e && e.target && e.target.orientation.angle || 0;
         this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
         console.log(angle);
         console.log(this.orientation);
