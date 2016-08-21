@@ -42981,14 +42981,14 @@ var AppComponent = (function () {
     }
     ;
     AppComponent.prototype.ngOnInit = function () {
+        console.log('- Screen: ', screen);
+        console.log('- Window: ', window, window.orientation, window.onorientationchange);
         this.marqueeList = this.marqueeService.getList();
         this.marquee = this.marqueeService.getDefaultMarquee();
         this.inputText = this.marquee.text;
         this.configureDimensions();
     };
     AppComponent.prototype.configureDimensions = function () {
-        console.log(screen);
-        console.log(window);
         this.width = screen.width;
         this.height = screen.height;
         this.marqueeWidth = Math.max(this.width, this.height);
@@ -43003,8 +43003,12 @@ var AppComponent = (function () {
         //   this.marqueeHeight = this.marqueeWidth * this.width / this.height;
         // }
     };
+    AppComponent.prototype.onResize = function (e) {
+        console.log('resize: ', e);
+    };
     AppComponent.prototype.onOrientationChange = function (e) {
         if (e === void 0) { e = null; }
+        console.log('orientation change: ', e);
         // console.log(e && e.target);
         var angle = e && e.target && e.target.orientation || 0;
         this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
@@ -55511,7 +55515,7 @@ module.exports = ":host {\n  display: block; }\n\ndiv {\n  position: relative;\n
 /* 497 */
 /***/ function(module, exports) {
 
-module.exports = "<div (window:orientationchange)=\"onOrientationChange($event)\"></div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <div class=\"center-text\">\n    <h2>Edit Scroll</h2>\n    <p>\n      Enter your message<br>\n      Rotate your phone to activate<br>\n      Click save to keep it for next time\n    </p>\n\n    <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n    <button (click)=\"save()\">Save</button>\n  </div>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker></p>\n  <p>Background <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker></p>\n\n\n\n  <div class=\"center-text\">\n    <h2>My Scrolls</h2>\n    <p>Tap on a scroll to activate</p>\n  </div>\n  <app-marquee-list [marqueeList]=\"marqueeList\" (selectedItem)=\"selectedMarquee($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
+module.exports = "<div (window:orientationchange)=\"onOrientationChange($event)\"\n     (window:resize)=\"onResize($event)\">\n</div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <div class=\"center-text\">\n    <h2>Edit Scroll</h2>\n    <p>\n      Enter your message<br>\n      Rotate your phone to activate<br>\n      Click save to keep it for next time\n    </p>\n\n    <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n    <button (click)=\"save()\">Save</button>\n  </div>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker></p>\n  <p>Background <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker></p>\n\n\n\n  <div class=\"center-text\">\n    <h2>My Scrolls</h2>\n    <p>Tap on a scroll to activate</p>\n  </div>\n  <app-marquee-list [marqueeList]=\"marqueeList\" (selectedItem)=\"selectedMarquee($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
 
 /***/ },
 /* 498 */
