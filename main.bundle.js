@@ -42989,20 +42989,27 @@ var AppComponent = (function () {
     AppComponent.prototype.configureDimensions = function () {
         this.width = window.innerWidth;
         this.height = window.innerHeight;
-        this.orientation = this.width > this.height ? Orientation.Landscape : Orientation.Protrait;
-        this.displayUserInput = this.orientation === Orientation.Protrait;
-        this.displayMarquee = this.orientation === Orientation.Landscape;
-        if (this.orientation === Orientation.Landscape) {
-            this.marqueeWidth = this.width;
-            this.marqueeHeight = this.height;
-        }
-        else {
-            this.marqueeWidth = this.width;
-            this.marqueeHeight = this.marqueeWidth * this.width / this.height;
-        }
+        this.marqueeWidth = Math.max(this.width, this.height);
+        this.marqueeHeight = Math.min(this.width, this.height);
+        this.onOrientationChange();
+        console.log(this.marqueeWidth);
+        console.log(this.marqueeHeight);
+        //
+        // if (this.orientation === Orientation.Landscape) {
+        //   this.marqueeWidth = this.width;
+        //   this.marqueeHeight = this.height;
+        // } else {
+        //   this.marqueeWidth = this.width;
+        //   this.marqueeHeight = this.marqueeWidth * this.width / this.height;
+        // }
     };
-    AppComponent.prototype.onResize = function (e) {
-        this.configureDimensions();
+    AppComponent.prototype.onOrientationChange = function (e) {
+        if (e === void 0) { e = null; }
+        console.log(e);
+        // let angle = screen['orientation']['angle'];
+        // this.orientation = angle === -90 || angle === 90  ? Orientation.Landscape : Orientation.Protrait;
+        this.displayUserInput = true; //this.orientation === Orientation.Protrait;
+        this.displayMarquee = this.orientation === Orientation.Landscape;
     };
     AppComponent.prototype.changeText = function (e) {
         this.marquee = new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */](this.inputText, this.marquee.backgroundColor, this.marquee.textColor, this.marquee.font, this.marquee.animationSpeed);
@@ -43057,7 +43064,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var DEFAULT_MARQUEE_TEXT = 'Hello!';
 var DEFAULT_BACKGROUND_COLOR = '#000000';
 var DEFAULT_TEXT_COLOR = '#ffffff';
-var DEFAULT_ANIMATION_SPEED = 2;
+var DEFAULT_ANIMATION_SPEED = 5;
 var DEFAULT_FONT = 'Patua One';
 var MarqueeService = (function () {
     function MarqueeService() {
@@ -55295,7 +55302,7 @@ var MarqueeComponent = (function () {
     function MarqueeComponent(elementRef) {
         this.elementRef = elementRef;
         this.isAnimating = true;
-        this.scaleFactor = 15;
+        this.scaleFactor = 5;
         this.heightFactor = .80;
         this.extraMarginTop = 0;
         this.marqueeLocation = 0;
@@ -55339,6 +55346,7 @@ var MarqueeComponent = (function () {
         canvas.width = this.width;
         canvas.height = this.height;
         var ctx = canvas.getContext('2d');
+        ctx.save();
         // Background
         ctx.fillStyle = this.marquee.backgroundColor;
         ctx.fillRect(0, 0, this.width, this.height);
@@ -55354,6 +55362,7 @@ var MarqueeComponent = (function () {
             ctx.lineTo(this.width, y);
         }
         ctx.stroke();
+        ctx.restore();
     };
     MarqueeComponent.prototype.paintMarquee = function () {
         var offscreenCanvas = this.offscreenCanvas;
@@ -55500,7 +55509,7 @@ module.exports = ":host {\n  display: block; }\n\ndiv {\n  position: relative;\n
 /* 497 */
 /***/ function(module, exports) {
 
-module.exports = "<div (window:resize)=\"onResize($event)\"></div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <div class=\"center-text\">\n    <h2>Edit Scroll</h2>\n    <p>\n      Enter your message<br>\n      Rotate your phone to activate<br>\n      Click save to keep it for next time\n    </p>\n\n    <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n    <button (click)=\"save()\">Save</button>\n  </div>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker></p>\n  <p>Background <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker></p>\n\n\n\n  <div class=\"center-text\">\n    <h2>My Scrolls</h2>\n    <p>Tap on a scroll to activate</p>\n  </div>\n  <app-marquee-list [marqueeList]=\"marqueeList\" (selectedItem)=\"selectedMarquee($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
+module.exports = "<div (window:deviceorientation)=\"onOrientationChange($event)\"></div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <div class=\"center-text\">\n    <h2>Edit Scroll</h2>\n    <p>\n      Enter your message<br>\n      Rotate your phone to activate<br>\n      Click save to keep it for next time\n    </p>\n\n    <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n    <button (click)=\"save()\">Save</button>\n  </div>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker></p>\n  <p>Background <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker></p>\n\n\n\n  <div class=\"center-text\">\n    <h2>My Scrolls</h2>\n    <p>Tap on a scroll to activate</p>\n  </div>\n  <app-marquee-list [marqueeList]=\"marqueeList\" (selectedItem)=\"selectedMarquee($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
 
 /***/ },
 /* 498 */
