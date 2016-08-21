@@ -42987,8 +42987,8 @@ var AppComponent = (function () {
         this.configureDimensions();
     };
     AppComponent.prototype.configureDimensions = function () {
-        this.width = window.innerWidth;
-        this.height = window.innerHeight;
+        this.width = window.outerWidth;
+        this.height = window.outerHeight;
         this.marqueeWidth = Math.max(this.width, this.height);
         this.marqueeHeight = Math.min(this.width, this.height);
         this.onOrientationChange();
