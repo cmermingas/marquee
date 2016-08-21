@@ -42992,8 +42992,6 @@ var AppComponent = (function () {
         this.marqueeWidth = Math.max(this.width, this.height);
         this.marqueeHeight = Math.min(this.width, this.height);
         this.onOrientationChange();
-        console.log(this.marqueeWidth);
-        console.log(this.marqueeHeight);
         //
         // if (this.orientation === Orientation.Landscape) {
         //   this.marqueeWidth = this.width;
@@ -43005,10 +43003,9 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.onOrientationChange = function (e) {
         if (e === void 0) { e = null; }
-        console.log(e);
-        // let angle = screen['orientation']['angle'];
-        // this.orientation = angle === -90 || angle === 90  ? Orientation.Landscape : Orientation.Protrait;
-        this.displayUserInput = true; //this.orientation === Orientation.Protrait;
+        var angle = screen['orientation']['angle'];
+        this.orientation = angle === -90 || angle === 90 ? Orientation.Landscape : Orientation.Protrait;
+        this.displayUserInput = this.orientation === Orientation.Protrait;
         this.displayMarquee = this.orientation === Orientation.Landscape;
     };
     AppComponent.prototype.changeText = function (e) {
