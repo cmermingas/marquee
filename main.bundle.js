@@ -42970,10 +42970,6 @@ var Orientation;
     Orientation[Orientation["Protrait"] = 0] = "Protrait";
     Orientation[Orientation["Landscape"] = 1] = "Landscape";
 })(Orientation || (Orientation = {}));
-var DEFAULT_BACKGROUND_COLOR = '#000000';
-var DEFAULT_TEXT_COLOR = '#ffffff';
-var DEFAULT_ANIMATION_SPEED = 2;
-var DEFAULT_FONT = 'Patua One';
 var AppComponent = (function () {
     function AppComponent(marqueeService) {
         this.marqueeService = marqueeService;
@@ -43021,8 +43017,16 @@ var AppComponent = (function () {
         this.marquee = new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */](this.inputText, this.marquee.backgroundColor, this.marquee.textColor, this.marquee.font, this.marquee.animationSpeed);
     };
     AppComponent.prototype.selectedMarquee = function (selectedMarquee) {
-        this.marquee = new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */](selectedMarquee.text, selectedMarquee.backgroundColor, selectedMarquee.textColor, selectedMarquee.font, selectedMarquee.animationSpeed);
+        if (selectedMarquee !== null) {
+            this.marquee = new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */](selectedMarquee.text, selectedMarquee.backgroundColor, selectedMarquee.textColor, selectedMarquee.font, selectedMarquee.animationSpeed);
+        }
+        else {
+            this.marquee = this.marqueeService.getDefaultMarquee();
+        }
         this.inputText = this.marquee.text;
+    };
+    AppComponent.prototype.deleteMarqueeAt = function (index) {
+        this.marqueeService.deleteMarqueeAt(index);
     };
     AppComponent.prototype.save = function () {
         this.marqueeService.add(this.marquee);
@@ -43070,26 +43074,42 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var DEFAULT_MARQUEE_TEXT = 'Hello!';
 var DEFAULT_BACKGROUND_COLOR = '#000000';
 var DEFAULT_TEXT_COLOR = '#ffffff';
-var DEFAULT_ANIMATION_SPEED = 5;
+var DEFAULT_ANIMATION_SPEED = 10;
 var DEFAULT_FONT = 'Patua One';
 var MarqueeService = (function () {
     function MarqueeService() {
     }
     MarqueeService.prototype.getList = function () {
         if (!this.marqueeList) {
-            this.marqueeList = [
-                this.getDefaultMarquee(),
-                new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */]('Good bye', '#ffffff', '#000000', DEFAULT_FONT, DEFAULT_ANIMATION_SPEED),
-                new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */]('Check please!', DEFAULT_BACKGROUND_COLOR, DEFAULT_TEXT_COLOR, DEFAULT_FONT, DEFAULT_ANIMATION_SPEED),
-            ];
+            this.marqueeList = this.load();
         }
         return this.marqueeList;
     };
     MarqueeService.prototype.add = function (marquee) {
         this.marqueeList.push(marquee);
+        this.save(this.marqueeList);
+    };
+    MarqueeService.prototype.deleteMarqueeAt = function (index) {
+        this.marqueeList.splice(index, 1);
+        this.save(this.marqueeList);
+    };
+    MarqueeService.prototype.save = function (obj) {
+        if (this.canBeSaved()) {
+            window.localStorage.setItem('marquee', JSON.stringify(obj));
+        }
+    };
+    MarqueeService.prototype.load = function () {
+        var result = [];
+        if (this.canBeSaved()) {
+            result = JSON.parse(window.localStorage.getItem('marquee')) || [];
+        }
+        return result;
     };
     MarqueeService.prototype.getDefaultMarquee = function () {
-        return new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */]('Hello!', DEFAULT_BACKGROUND_COLOR, DEFAULT_TEXT_COLOR, DEFAULT_FONT, DEFAULT_ANIMATION_SPEED);
+        return new __WEBPACK_IMPORTED_MODULE_1__marquee_model__["a" /* MarqueeModel */]('Type Something :-)', DEFAULT_BACKGROUND_COLOR, DEFAULT_TEXT_COLOR, DEFAULT_FONT, DEFAULT_ANIMATION_SPEED);
+    };
+    MarqueeService.prototype.canBeSaved = function () {
+        return window['localStorage'] !== undefined;
     };
     MarqueeService = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(), 
@@ -55154,7 +55174,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var ColorPickerComponent = (function () {
     function ColorPickerComponent() {
-        this.colors = ['#ffffff', '#000000', '#ffff00', '#0000ff', '#ff0000'];
+        this.colors = ['#ffffff', '#000000', '#ffff00', '#ff0000'];
         this.colorPicked = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
     }
     ColorPickerComponent.prototype.ngOnInit = function () { };
@@ -55215,10 +55235,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var MarqueeListComponent = (function () {
     function MarqueeListComponent() {
         this.selectedItem = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
+        this.deleteItemAt = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["EventEmitter"]();
+        this.selectedIndex = null;
     }
     MarqueeListComponent.prototype.ngOnInit = function () { };
     MarqueeListComponent.prototype.selectItem = function (index) {
-        this.selectedItem.emit(this.marqueeList[index]);
+        if (this.selectedIndex === index) {
+            this.selectedIndex = null;
+            this.selectedItem.emit(null);
+        }
+        else {
+            this.selectedIndex = index;
+            this.selectedItem.emit(this.marqueeList[index]);
+        }
+    };
+    MarqueeListComponent.prototype.deleteItem = function (index) {
+        this.deleteItemAt.emit(this.selectedIndex);
+        this.selectedIndex = null;
     };
     __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(), 
@@ -55228,6 +55261,10 @@ var MarqueeListComponent = (function () {
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Output"])(), 
         __metadata('design:type', Object)
     ], MarqueeListComponent.prototype, "selectedItem", void 0);
+    __decorate([
+        __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Output"])(), 
+        __metadata('design:type', Object)
+    ], MarqueeListComponent.prototype, "deleteItemAt", void 0);
     MarqueeListComponent = __decorate([
         __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'app-marquee-list',
@@ -55485,7 +55522,7 @@ var MarqueeComponent = (function () {
 /* 492 */
 /***/ function(module, exports) {
 
-module.exports = "h1, h2, p, input {\n  font-family: Verdana; }\n\n#userInput {\n  margin: 10px; }\n  #userInput input[type=text] {\n    margin: 0 0 10px 0;\n    padding: 5px;\n    border: 1px solid black;\n    border-radius: 10px;\n    font-size: larger; }\n  #userInput button {\n    font-size: larger;\n    border-radius: 10px;\n    user-select: none; }\n  #userInput h2 {\n    text-align: center; }\n\n.center-text {\n  text-align: center; }\n"
+module.exports = "h1, h2, p, input {\n  font-family: Verdana; }\n\n.count {\n  font-size: smaller;\n  background-color: lightgray;\n  border-radius: 10px;\n  padding: 1px 5px 2px 5px; }\n\n#userInput {\n  margin: 10px; }\n  #userInput input[type=text] {\n    margin: 0 0 10px 0;\n    padding: 5px;\n    border: 1px solid black;\n    border-radius: 10px;\n    font-size: larger; }\n  #userInput button {\n    font-size: larger;\n    border-radius: 10px;\n    user-select: none; }\n  #userInput h2 {\n    text-align: center; }\n\n.center-text {\n  text-align: center; }\n"
 
 /***/ },
 /* 493 */
@@ -55497,13 +55534,13 @@ module.exports = ":host {\n  display: flex;\n  flex-direction: row;\n  flex-wrap
 /* 494 */
 /***/ function(module, exports) {
 
-module.exports = ":host {\n  display: block; }\n\nul {\n  list-style-type: none;\n  margin: 20px 0 0 0;\n  padding: 0; }\n  ul li {\n    margin-bottom: 20px; }\n"
+module.exports = ":host {\n  display: block; }\n\nul {\n  list-style-type: none;\n  margin: 20px 0 0 0;\n  padding: 0; }\n  ul li {\n    margin-bottom: 20px;\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n    align-content: flex-end; }\n    ul li app-marquee-preview {\n      flex-grow: 1; }\n    ul li .deleteButton {\n      margin: 5px;\n      border-radius: 5px;\n      font-size: larger;\n      background-color: red;\n      color: yellow;\n      border-color: black;\n      vertical-align: middle; }\n"
 
 /***/ },
 /* 495 */
 /***/ function(module, exports) {
 
-module.exports = ":host {\n  display: block; }\n\ndiv {\n  padding: 15px;\n  border-radius: 10px;\n  border: 2px solid black; }\n"
+module.exports = "div {\n  padding: 15px;\n  border-radius: 10px;\n  border: 2px solid black; }\n"
 
 /***/ },
 /* 496 */
@@ -55515,7 +55552,7 @@ module.exports = ":host {\n  display: block; }\n\ndiv {\n  position: relative;\n
 /* 497 */
 /***/ function(module, exports) {
 
-module.exports = "<div\n  (window:orientationchange)=\"onOrientationChange()\"\n  (window:resize)=\"onResize()\">\n</div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <div class=\"center-text\">\n    <h2>Edit Scroll</h2>\n    <p>\n      Enter your message<br>\n      Rotate your phone to activate<br>\n      Click save to keep it for next time\n    </p>\n\n    <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n    <button (click)=\"save()\">Save</button>\n  </div>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text\n    <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker>\n  </p>\n  <p>Background\n    <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker>\n  </p>\n\n\n  <div class=\"center-text\">\n    <h2>My Scrolls</h2>\n    <p>Tap on a scroll to activate</p>\n  </div>\n  <app-marquee-list [marqueeList]=\"marqueeList\" (selectedItem)=\"selectedMarquee($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
+module.exports = "<div\n  (window:orientationchange)=\"onOrientationChange()\"\n  (window:resize)=\"onResize()\">\n</div>\n\n<div id=\"userInput\" *ngIf=\"displayUserInput\">\n  <h2>Make a Cool Scroll</h2>\n  <p>\n    <span class=\"count\">uno</span> Enter your message<br>\n    <span class=\"count\">dos</span> Rotate your phone to activate<br>\n    <span class=\"count\">tres</span> Click save to keep it for next time\n  </p>\n\n  <input type='text' [(ngModel)]=\"inputText\" (keyup)=\"changeText($event)\">\n  <button (click)=\"save()\">Save</button>\n\n  <app-marquee-preview [marquee]=\"marquee\"></app-marquee-preview>\n  <p>Text\n    <app-color-picker (colorPicked)=\"pickTextColor($event)\"></app-color-picker>\n  </p>\n  <p>Background\n    <app-color-picker (colorPicked)=\"pickBackgroundColor($event)\"></app-color-picker>\n  </p>\n\n\n  <div class=\"center-text\">\n    <h2>My Cool Scrolls</h2>\n    <p *ngIf=\"marqueeList.length > 0\">Tap on a scroll to activate</p>\n    <p *ngIf=\"marqueeList.length === 0\"><em>Your list is empty</em></p>\n  </div>\n  <app-marquee-list\n    [marqueeList]=\"marqueeList\"\n    (selectedItem)=\"selectedMarquee($event)\"\n    (deleteItemAt)=\"deleteMarqueeAt($event)\"></app-marquee-list>\n</div>\n\n\n<app-marquee *ngIf=\"displayMarquee\"\n             [width]=\"marqueeWidth\"\n             [height]=\"marqueeHeight\"\n             [marquee]=\"marquee\"></app-marquee>\n"
 
 /***/ },
 /* 498 */
@@ -55527,7 +55564,7 @@ module.exports = "<span *ngFor=\"let color of colors\"\n      class=\"color\"\n 
 /* 499 */
 /***/ function(module, exports) {
 
-module.exports = "<ul>\n  <li *ngFor=\"let item of marqueeList; let i = index\">\n    <app-marquee-preview [marquee]=\"item\" (click)=\"selectItem(i)\"></app-marquee-preview>\n  </li>\n</ul>\n"
+module.exports = "<ul>\n  <li *ngFor=\"let item of marqueeList; let i = index\">\n    <app-marquee-preview [marquee]=\"item\" (click)=\"selectItem(i)\"></app-marquee-preview>\n    <button *ngIf=\"selectedIndex === i\" class=\"deleteButton\" (click)=\"deleteItem(i)\">Delete</button>\n  </li>\n</ul>\n"
 
 /***/ },
 /* 500 */
@@ -55539,7 +55576,7 @@ module.exports = "<div [style.background-color]=\"marquee.backgroundColor\"\n   
 /* 501 */
 /***/ function(module, exports) {
 
-module.exports = "<div>\n  <!--<canvas id=\"gridCanvas\" #gridCanvas  [attr.width]=\"width\" [attr.height]=\"height\"></canvas>-->\n  <!--<canvas id=\"marqueeCanvas\" #marqueeCanvas [attr.width]=\"width\" [attr.height]=\"height\"></canvas>-->\n  <canvas id=\"gridCanvas\" #gridCanvas></canvas>\n  <canvas id=\"marqueeCanvas\" #marqueeCanvas></canvas>\n</div>\n\n<!--<br>-->\n<!--<canvas id=\"offscreenCanvas\" #offscreenCanvas [attr.width]=\"width\" [attr.height]=\"height\"></canvas>-->\n"
+module.exports = "<div>\n  <!--<canvas id=\"gridCanvas\" #gridCanvas  [attr.width]=\"width\" [attr.height]=\"height\"></canvas>-->\n  <!--<canvas id=\"marqueeCanvas\" #marqueeCanvas [attr.width]=\"width\" [attr.height]=\"height\"></canvas>-->\n  <canvas id=\"gridCanvas\" #gridCanvas></canvas>\n  <canvas id=\"marqueeCanvas\" #marqueeCanvas></canvas>\n</div>\n\n<!--<br>-->\n<!--<canvas id=\"offscreenCanvas\" #offscreenCanvas></canvas>-->\n"
 
 /***/ },
 /* 502 */
